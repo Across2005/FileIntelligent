@@ -1,6 +1,7 @@
 package com.fileintelligence.data
 
 import androidx.compose.ui.graphics.Color
+import com.fileintelligence.ai.AnalysisEngine
 
 fun generateMockFiles(): List<FileItem> {
     val engine = AnalysisEngine()
@@ -85,15 +86,15 @@ fun generateMockGraphNodes(): List<GraphNode> {
 
 fun generateMockGraphEdges(): List<GraphEdge> {
     return listOf(
-        GraphEdge("n1", "n2", GraphEdge.EdgeType.REFERENCES),
-        GraphEdge("n1", "n3", GraphEdge.EdgeType.BELONGS_TO),
-        GraphEdge("n1", "n4", GraphEdge.EdgeType.DERIVES),
-        GraphEdge("n2", "n5", GraphEdge.EdgeType.DERIVES),
-        GraphEdge("n2", "n6", GraphEdge.EdgeType.REFERENCES),
-        GraphEdge("n1", "n6", GraphEdge.EdgeType.BELONGS_TO),
-        GraphEdge("n4", "n7", GraphEdge.EdgeType.DERIVES),
-        GraphEdge("n6", "n7", GraphEdge.EdgeType.REFERENCES),
-        GraphEdge("n7", "n8", GraphEdge.EdgeType.REFERENCES),
-        GraphEdge("n5", "n3", GraphEdge.EdgeType.BELONGS_TO),
+        GraphEdge("n1", "n2", EdgeType.REFERENCES),
+        GraphEdge("n1", "n3", EdgeType.BELONGS_TO),
+        GraphEdge("n1", "n4", EdgeType.DERIVES),
+        GraphEdge("n2", "n5", EdgeType.DERIVES),
+        GraphEdge("n2", "n6", EdgeType.REFERENCES),
+        GraphEdge("n1", "n6", EdgeType.BELONGS_TO),
+        GraphEdge("n4", "n7", EdgeType.DERIVES),
+        GraphEdge("n6", "n7", EdgeType.REFERENCES),
+        GraphEdge("n7", "n8", EdgeType.REFERENCES),
+        GraphEdge("n5", "n3", EdgeType.BELONGS_TO),
     )
 }

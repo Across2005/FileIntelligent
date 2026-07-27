@@ -33,7 +33,7 @@ data class FileItem(
 data class Entity(
     val id: String,
     val name: String,
-    val type: EntityType,
+    val type: Type,
     val mentions: Int = 1,
     val firstSeen: Long = System.currentTimeMillis(),
     val lastSeen: Long = System.currentTimeMillis(),

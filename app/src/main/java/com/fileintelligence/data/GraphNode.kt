@@ -17,6 +17,7 @@ enum class NodeType(val color: Color) {
     ENTITY(Color(0xFF06B6D4)),
     FILE(Color(0xFFF59E0B)),
     TOPIC(Color(0xFFEC4899)),
+    METHOD(Color(0xFF10B981)),
 }
 
 data class GraphEdge(

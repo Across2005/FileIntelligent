@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_import">导入文件</string>
+    <string name="ai_insight">AI 洞察</string>
+    <string name="app_name">文件智析</string>
+    <string name="label_curve">成长曲线</string>
+    <string name="label_graph">知识图谱</string>
+    <string name="label_growth">知识成长曲线</string>
+    <string name="label_recent_files">最近文件</string>
+    <string name="label_spectrum">发展光谱</string>
+    <string name="label_view_all">查看全部</string>
+    <string name="tab_home">首页</string>
+    <string name="tab_insights">洞察</string>
+    <string name="tab_library">文件库</string>
+    <string name="tab_settings">设置</string>
+    <style name="Theme.FileIntelligence" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#0F0F1A</item>
+        <item name="android:navigationBarColor">#0F0F1A</item>
+        <item name="android:windowBackground">#0F0F1A</item>
+    </style>
+</resources>
