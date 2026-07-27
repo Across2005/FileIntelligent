@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.fileintelligence.data.FileRepository
 import com.fileintelligence.ui.screens.DashboardScreen
 import com.fileintelligence.ui.screens.LibraryScreen
+import com.fileintelligence.ui.screens.SettingsScreen
 import com.fileintelligence.ui.screens.SpectrumGrowthScreen
 
 sealed class Screen(val route: String, val title: String) {
@@ -15,19 +17,43 @@ sealed class Screen(val route: String, val title: String) {
     object Spectrum : Screen("spectrum", "发展光谱")
     object Growth : Screen("growth", "成长曲线")
     object Graph : Screen("graph", "知识图谱")
+    object Settings : Screen("settings", "设置")
 }
 
 @Composable
-fun FileIntelligenceNavGraph(navController: NavHostController) {
+fun FileIntelligenceNavGraph(
+    navController: NavHostController,
+    repository: FileRepository,
+    isDarkTheme: Boolean,
+    onToggleTheme: (Boolean) -> Unit,
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
     ) {
-        composable(Screen.Home.route) { DashboardScreen(navController) }
-        composable(Screen.Library.route) { LibraryScreen(navController) }
+        composable(Screen.Home.route) {
+            DashboardScreen(
+                navController = navController,
+                repository = repository,
+            )
+        }
+        composable(Screen.Library.route) {
+            LibraryScreen(
+                navController = navController,
+                repository = repository,
+            )
+        }
         composable(Screen.Insights.route) { SpectrumGrowthScreen(navController) }
         composable(Screen.Spectrum.route) { SpectrumGrowthScreen(navController) }
         composable(Screen.Growth.route) { SpectrumGrowthScreen(navController) }
         composable(Screen.Graph.route) { com.fileintelligence.ui.screens.GraphScreen(navController) }
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
+                repository = repository,
+            )
+        }
     }
 }

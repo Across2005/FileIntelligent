@@ -3,72 +3,50 @@ package com.fileintelligence.data
 import androidx.compose.ui.graphics.Color
 import com.fileintelligence.ai.AnalysisEngine
 
-fun generateMockFiles(): List<FileItem> {
-    val engine = AnalysisEngine()
+// Raw mock data without AnalysisEngine dependency (used by FileRepository)
+fun generateMockFilesRaw(): List<FileItem> {
     return listOf(
         FileItem(
-            id = "1",
-            name = "认知架构笔记.md",
-            path = "/docs/cognitive-architecture.md",
-            extension = "md",
-            sizeBytes = 3270,
-            lastModified = System.currentTimeMillis() - 7200000,
+            id = "1", name = "认知架构笔记.md", path = "/docs/cognitive-architecture.md",
+            extension = "md", sizeBytes = 3270, lastModified = System.currentTimeMillis() - 7200000,
             tags = listOf("认知", "AI"),
+            content = "这是一个包含认知架构和Transformer模型讨论的文本文件。内容覆盖了注意力机制、深度学习方法和AI基础概念。",
             entities = listOf(
                 Entity("e1", "认知", Entity.Type.CONCEPT, mentions = 12),
                 Entity("e2", "Transformer", Entity.Type.TOOL, mentions = 8),
                 Entity("e3", "注意力", Entity.Type.CONCEPT, mentions = 6),
             ),
-            topics = listOf("AI 基础", "研究活动"),
-            importance = 0.9f,
+            topics = listOf("AI 基础", "研究活动"), importance = 0.9f,
         ),
         FileItem(
-            id = "2",
-            name = "Transformer 综述.txt",
-            path = "/docs/transformer-survey.txt",
-            extension = "txt",
-            sizeBytes = 8300,
-            lastModified = System.currentTimeMillis() - 18000000,
+            id = "2", name = "Transformer 综述.txt", path = "/docs/transformer-survey.txt",
+            extension = "txt", sizeBytes = 8300, lastModified = System.currentTimeMillis() - 18000000,
             tags = listOf("ML", "深度学习"),
+            content = "Transformer架构彻底改变了自然语言处理领域。BERT和GPT等模型。",
             entities = listOf(
                 Entity("e1", "Transformer", Entity.Type.TOOL, mentions = 15),
                 Entity("e2", "BERT", Entity.Type.TOOL, mentions = 10),
                 Entity("e3", "GPT", Entity.Type.TOOL, mentions = 8),
                 Entity("e4", "注意力机制", Entity.Type.CONCEPT, mentions = 7),
             ),
-            topics = listOf("深度学习", "技术栈"),
-            importance = 0.85f,
+            topics = listOf("深度学习", "技术栈"), importance = 0.85f,
         ),
         FileItem(
-            id = "3",
-            name = "读书札记_原则.pdf",
-            path = "/books/principles-notes.pdf",
-            extension = "pdf",
-            sizeBytes = 5840,
-            lastModified = System.currentTimeMillis() - 86400000L,
+            id = "3", name = "读书札记_原则.pdf", path = "/books/principles-notes.pdf",
+            extension = "pdf", sizeBytes = 5840, lastModified = System.currentTimeMillis() - 86400000L,
             tags = listOf("管理", "方法"),
+            content = "这是一本关于管理原则的读书笔记。讨论了优化方法和工作效率。",
             entities = listOf(
                 Entity("e1", "管理", Entity.Type.CONCEPT, mentions = 9),
                 Entity("e2", "方法", Entity.Type.METHOD, mentions = 6),
                 Entity("e3", "优化", Entity.Type.METHOD, mentions = 4),
             ),
-            topics = listOf("方法论"),
-            importance = 0.7f,
+            topics = listOf("方法论"), importance = 0.7f,
         ),
-    ).also { files ->
-        // Run AI analysis on each file
-        files.forEach { file ->
-            val content = readFileContent(file.path)
-            val result = engine.analyze(content)
-            // Store result (mock — in real app this would be persisted)
-        }
-    }
+    )
 }
 
-private fun readFileContent(path: String): String {
-    // In a real app, this reads the actual file content
-    return "这是一个包含认知架构和Transformer模型讨论的文本文件。内容覆盖了注意力机制、深度学习方法和AI基础概念。"
-}
+fun generateMockFiles(): List<FileItem> = generateMockFilesRaw()
 
 // Mock graph nodes for visualization
 fun generateMockGraphNodes(): List<GraphNode> {

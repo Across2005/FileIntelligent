@@ -12,6 +12,7 @@ data class FileItem(
     val createdAt: Long = System.currentTimeMillis(),
     val tags: List<String> = emptyList(),
     val aiSummary: String? = null,
+    val content: String = "",
     val entities: List<Entity> = emptyList(),
     val topics: List<String> = emptyList(),
     val importance: Float = 0f,

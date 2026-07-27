@@ -9,6 +9,9 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -58,18 +61,29 @@ private val LightColorScheme = lightColorScheme(
     onError = Color.White,
 )
 
+// Global theme state — no persistence for MVP
+object ThemeState {
+    var isDarkTheme by mutableStateOf(true)
+}
+
 @Composable
 fun FileIntelligenceTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
+    val useDark = if (dynamicColor && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        isSystemInDarkTheme()
+    } else {
+        darkTheme
+    }
+
     val colorScheme = when {
         dynamicColor && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S -> {
             val ctx = androidx.compose.ui.platform.LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(ctx) else dynamicLightColorScheme(ctx)
+            if (useDark) dynamicDarkColorScheme(ctx) else dynamicLightColorScheme(ctx)
         }
-        darkTheme -> DarkColorScheme
+        useDark -> DarkColorScheme
         else -> LightColorScheme
     }
 
@@ -78,7 +92,7 @@ fun FileIntelligenceTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !useDark
         }
     }
 
