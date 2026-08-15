@@ -3,6 +3,7 @@ package com.crossk.data.db
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 import com.crossk.data.FileItem
 
 /**
@@ -30,6 +31,10 @@ data class FileEntity(
     val importance: Float,
     val topics: List<String> = emptyList(),
     val tags: List<String> = emptyList(),
+    // v4: encoding metadata and source provenance
+    @ColumnInfo(defaultValue = "'UTF-8'") val encoding: String = "UTF-8",
+    @ColumnInfo(defaultValue = "'import'") val source: String = "import",
+    @ColumnInfo(defaultValue = "3") val analysisVersion: Int = 3,
 )
 
 fun FileEntity.toFileItem(): FileItem = FileItem(

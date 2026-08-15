@@ -13,8 +13,9 @@ import androidx.room.TypeConverters
         EdgeEntity::class,
         KnowledgeEntity::class,
         GraphLayoutEntity::class,
+        EntityConfirmationEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -38,7 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "file_intelligence.db",
                 )
                     // v2.0：正式迁移路径，替代 v1 的 destructive fallback
-                    .addMigrations(MIGRATION_2_3)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
                     // 兜底：仅 downgrade 或无迁移路径时清空
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .build()

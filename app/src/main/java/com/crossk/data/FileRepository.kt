@@ -107,7 +107,6 @@ class FileRepository {
      * 一次性加载全部文件 + 边表数据（应用启动时调用）。
      */
     suspend fun loadAllFromRoom(): RepoResult<List<FileItem>> = withContext(Dispatchers.IO) {
-    try {
         RepoResult.runCatchingResult {
             val db = database ?: return@runCatchingResult emptyList()
             val fileEntities = db.fileDao().getAllFilesSync()
@@ -171,61 +170,63 @@ class FileRepository {
         sizeBytes: Long,
         onStageChange: (AnalysisStage) -> Unit = {},
     ): RepoResult<FileItem> = withContext(Dispatchers.IO) {
-        RepoResult.runCatchingResult {
-            val now = System.currentTimeMillis()
-            val fileId = UUID.randomUUID().toString()
+        val r = try {
+            RepoResult.runCatchingResult {
+                val now = System.currentTimeMillis()
+                val fileId = UUID.randomUUID().toString()
 
-            val result = analysisEngine.analyzeWithProgress(content, fileId) { stage ->
-                analysisStage = stage
-                onStageChange(stage)
-            }
-
-            // 关系抽取（v2.0 真实句级/段级/文档级）
-            val relations = analysisEngine.extractRelationsFromAnalysis(result, content)
-
-            val file = FileItem(
-                id = fileId,
-                name = name,
-                path = "/local/$name",
-                extension = extension,
-                sizeBytes = sizeBytes,
-                lastModified = now,
-                createdAt = now,
-                content = content,
-                aiSummary = result.summary,
-                entities = result.entities,
-                topics = result.topics.map { it.name },
-                importance = computeFileImportance(result),
-            )
-
-            // 持久化（含边表） — 单文件事务
-            val db = database
-            if (db != null) {
-                db.fileDao().insert(file.toFileEntity())
-                db.entityDao().deleteForFile(file.id)
-                if (file.entities.isNotEmpty()) {
-                    db.entityDao().insertAll(file.entities.map { it.toEntityEntity(file.id) })
+                val result = analysisEngine.analyzeWithProgress(content, fileId) { stage ->
+                    analysisStage = stage
+                    onStageChange(stage)
                 }
-                val edges = relations.map { it.toEdge() }
-                db.edgeDao().replaceForFile(file.id, edges)
+
+                // 关系抽取（v2.0 真实句级/段级/文档级）
+                val relations = analysisEngine.extractRelationsFromAnalysis(result, content)
+
+                val file = FileItem(
+                    id = fileId,
+                    name = name,
+                    path = "/local/$name",
+                    extension = extension,
+                    sizeBytes = sizeBytes,
+                    lastModified = now,
+                    createdAt = now,
+                    content = content,
+                    aiSummary = result.summary,
+                    entities = result.entities,
+                    topics = result.topics.map { it.name },
+                    importance = computeFileImportance(result),
+                )
+
+                // 持久化（含边表） — 单文件事务
+                val db = database
+                if (db != null) {
+                    db.fileDao().insert(file.toFileEntity())
+                    db.entityDao().deleteForFile(file.id)
+                    if (file.entities.isNotEmpty()) {
+                        db.entityDao().insertAll(file.entities.map { it.toEntityEntity(file.id) })
+                    }
+                    val edges = relations.map { it.toEdge() }
+                    db.edgeDao().replaceForFile(file.id, edges)
+                }
+
+                // 内存更新
+                _files.add(0, file)
+
+                // 关系并入内存累积器（v2.1：同步路径不再依赖 runBlocking 读库）
+                mergeRelations(relations)
+
+                // XP / 音效
+                addXpForAnalysis()
+                addXpForEntities(result.entities.size)
+                rebuildGlobalGraph()
+                soundManager?.playParseComplete()
+                file
             }
-
-            // 内存更新
-            _files.add(0, file)
-
-            // 关系并入内存累积器（v2.1：同步路径不再依赖 runBlocking 读库）
-            mergeRelations(relations)
-
-            // XP / 音效
-            addXpForAnalysis()
-            addXpForEntities(result.entities.size)
-            rebuildGlobalGraph()
-            soundManager?.playParseComplete()
-            file
+        } finally {
+            analysisStage = AnalysisStage.IDLE
         }
-    } finally {
-        analysisStage = AnalysisStage.IDLE
-    }
+        r
     }
 
     /**

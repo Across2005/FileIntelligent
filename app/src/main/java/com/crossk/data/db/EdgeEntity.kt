@@ -3,6 +3,7 @@ package com.crossk.data.db
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.ColumnInfo
 import com.crossk.data.RelationType
 import com.crossk.data.Relation as DomainRelation
 
@@ -46,6 +47,9 @@ data class EdgeEntity(
     val weight: Float,
     val evidence: String?,      // JSON 字符串：[{fileId, sentence, offset}]
     val createdAt: Long,
+    // v4: confidence and provenance for the edge
+    @ColumnInfo(defaultValue = "0.5") val confidence: Float = 0.5f,
+    @ColumnInfo(defaultValue = "'rule'") val source: String = "rule",
 )
 
 fun EdgeEntity.toDomain(): DomainRelation = DomainRelation(

@@ -1,5 +1,6 @@
 package com.crossk.data.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -15,4 +16,9 @@ data class KnowledgeEntity(
     val streakCurrent: Int = 0,
     val streakLongest: Int = 0,
     val streakLastActive: Long = 0L,
+    // v4: onboarding state and capture telemetry
+    @ColumnInfo(defaultValue = "0") val onboardingCompleted: Boolean = false,
+    @ColumnInfo(defaultValue = "NULL") val firstCaptureAt: Long? = null,
+    @ColumnInfo(defaultValue = "NULL") val lastCaptureAt: Long? = null,
+    @ColumnInfo(defaultValue = "0") val captureStreak: Int = 0,
 )

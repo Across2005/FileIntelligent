@@ -46,3 +46,48 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_entities_fileId` ON `entities` (`fileId`)")
     }
 }
+
+/**
+ * v3 → v4: add user-feedback loop columns + entity_confirmations table.
+ * Non-destructive: every ALTER TABLE adds a column with a DEFAULT so
+ * existing rows stay valid. New table is empty.
+ */
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // entities: 3 new columns for user feedback (confirm/ignore/count)
+        db.execSQL("ALTER TABLE `entities` ADD COLUMN `isUserConfirmed` INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE `entities` ADD COLUMN `isUserIgnored` INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE `entities` ADD COLUMN `confirmationCount` INTEGER NOT NULL DEFAULT 0")
+
+        // edges: confidence + source
+        db.execSQL("ALTER TABLE `edges` ADD COLUMN `confidence` REAL NOT NULL DEFAULT 0.5")
+        db.execSQL("ALTER TABLE `edges` ADD COLUMN `source` TEXT NOT NULL DEFAULT 'rule'")
+
+        // files: encoding + source + analysisVersion
+        db.execSQL("ALTER TABLE `files` ADD COLUMN `encoding` TEXT NOT NULL DEFAULT 'UTF-8'")
+        db.execSQL("ALTER TABLE `files` ADD COLUMN `source` TEXT NOT NULL DEFAULT 'import'")
+        db.execSQL("ALTER TABLE `files` ADD COLUMN `analysisVersion` INTEGER NOT NULL DEFAULT 3")
+
+        // knowledge: onboarding + capture telemetry
+        db.execSQL("ALTER TABLE `knowledge` ADD COLUMN `onboardingCompleted` INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE `knowledge` ADD COLUMN `firstCaptureAt` INTEGER")
+        db.execSQL("ALTER TABLE `knowledge` ADD COLUMN `lastCaptureAt` INTEGER")
+        db.execSQL("ALTER TABLE `knowledge` ADD COLUMN `captureStreak` INTEGER NOT NULL DEFAULT 0")
+
+        // new table: entity_confirmations
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `entity_confirmations` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `entityId` TEXT NOT NULL,
+                `originalType` TEXT NOT NULL,
+                `confirmedType` TEXT,
+                `isIgnored` INTEGER NOT NULL,
+                `confirmedAt` INTEGER NOT NULL
+            )
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_entity_confirmations_entityId` ON `entity_confirmations` (`entityId`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_entity_confirmations_confirmedAt` ON `entity_confirmations` (`confirmedAt`)")
+    }
+}

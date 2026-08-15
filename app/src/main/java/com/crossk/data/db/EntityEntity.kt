@@ -3,6 +3,7 @@ package com.crossk.data.db
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 import com.crossk.data.Entity as DataEntity
 
 /**
@@ -28,6 +29,10 @@ data class EntityEntity(
     val firstSeen: Long,
     val lastSeen: Long,
     val importance: Float = 0f,
+    // v4 (CR-1 user feedback loop): user can confirm or ignore an entity's type
+    @ColumnInfo(defaultValue = "0") val isUserConfirmed: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val isUserIgnored: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val confirmationCount: Int = 0,
 )
 
 fun EntityEntity.toEntity(): DataEntity = DataEntity(
