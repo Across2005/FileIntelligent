@@ -135,7 +135,7 @@ class AnalysisEngine {
             entities = entityScores.entries.map { (name, score) ->
                 val type = conceptDictionary[name]?.type ?: Entity.Type.CONCEPT
                 Entity(
-                    id = "ent_${name.hashCode().toUInt()}",
+                    id = EntityIDFactory.entityID(type, name),
                     name = name,
                     type = type,
                     mentions = score.toInt(),
@@ -186,7 +186,7 @@ class AnalysisEngine {
             entities = entityScores.entries.map { (name, score) ->
                 val type = conceptDictionary[name]?.type ?: Entity.Type.CONCEPT
                 Entity(
-                    id = "ent_${name.hashCode().toUInt()}",
+                    id = EntityIDFactory.entityID(type, name),
                     name = name,
                     type = type,
                     mentions = score.toInt(),
