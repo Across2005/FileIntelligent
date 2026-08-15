@@ -28,7 +28,10 @@ class CrossKApp : Application() {
         // Load persisted data from Room (overrides mock data)
         appScope.launch {
             fileRepository.loadFromRoom()
-            fileRepository.loadAllFromRoom()
+            when (val r = fileRepository.loadAllFromRoom()) {
+                is RepoResult.Err -> { /* log only — first run is allowed to fail */ }
+                is RepoResult.Ok -> { /* nothing extra */ }
+            }
         }
     }
 

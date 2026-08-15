@@ -80,19 +80,26 @@ class FileRepository {
 
     // ── 加载 / 持久化 ──
 
-    suspend fun loadFromRoom() = withContext(Dispatchers.IO) {
-        val db = database ?: return@withContext
-        val knowledge = db.knowledgeDao().getKnowledgeSync()
-        if (knowledge != null) {
-            gameEngine.restoreXp(knowledge.totalXp)
-            graphVisualLevel = knowledge.graphVisualLevel
-            gameEngine.restoreStreak(
-                StreakData(
-                    currentStreak = knowledge.streakCurrent,
-                    longestStreak = knowledge.streakLongest,
-                    lastActiveDate = knowledge.streakLastActive,
-                ),
-            )
+    /**
+     * Load game state (XP, streak, graph level) from Room.
+     * Returns RepoResult so callers can handle DB read errors
+     * uniformly with saveAll / loadAllFromRoom.
+     */
+    suspend fun loadFromRoom(): RepoResult<Unit> = withContext(Dispatchers.IO) {
+        RepoResult.runCatchingResult {
+            val db = database ?: return@runCatchingResult
+            val knowledge = db.knowledgeDao().getKnowledgeSync()
+            if (knowledge != null) {
+                gameEngine.restoreXp(knowledge.totalXp)
+                graphVisualLevel = knowledge.graphVisualLevel
+                gameEngine.restoreStreak(
+                    StreakData(
+                        currentStreak = knowledge.streakCurrent,
+                        longestStreak = knowledge.streakLongest,
+                        lastActiveDate = knowledge.streakLastActive,
+                    ),
+                )
+            }
         }
     }
 
