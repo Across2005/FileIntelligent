@@ -9,23 +9,24 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- No INTERNET permission — app is fully offline by design -->
 
     <application
-        android:name=".FileIntelligenceApp"
-        android:allowBackup="true"
+        android:name=".CrossKApp"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FileIntelligence"
+        android:theme="@style/Theme.CrossK"
         tools:targetApi="35">
 
+        <!-- Main activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.FileIntelligence">
+            android:theme="@style/Theme.CrossK">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -42,5 +43,39 @@
                 <data android:mimeType="application/octet-stream" />
             </intent-filter>
         </activity>
+
+        <!-- Quick Capture — receive text from any app -->
+        <activity
+            android:name=".QuickCaptureActivity"
+            android:exported="true"
+            android:label="Cross K 快记"
+            android:theme="@style/Theme.CrossK"
+            android:excludeFromRecents="true"
+            android:taskAffinity="">
+            <!-- Share text from other apps -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <!-- Process selected text (Android 6+) -->
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- Home screen widget -->
+        <receiver
+            android:name=".widget.CrossKWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/file_intelligence_widget_info" />
+        </receiver>
     </application>
 </manifest>

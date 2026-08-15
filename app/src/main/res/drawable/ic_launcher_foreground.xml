@@ -1,17 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  文件智析 — 破纸生树 App Icon (Foreground)
+  概念：从知识文件中生长出智慧之树，枝头缀满知识节点
+  色彩：蜜桃粉 #E8A0BF / 薄荷绿 #B5C9B7 / 暖金黄 #F0C27A
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group android:translateX="24" android:translateY="24">
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M30,10 L60,10 Q70,10 70,20 L70,50 Q70,60 60,60 L50,60 L45,70 L40,60 L30,60 Q20,60 20,50 L20,20 Q20,10 30,10 Z"/>
-        <path
-            android:fillColor="#7C3AED"
-            android:pathData="M28,22 L52,22 M28,32 L52,32 M28,42 L42,42"
-            android:strokeWidth="3"
-            android:strokeColor="#FFFFFF"/>
-    </group>
+
+    <!-- ===== 底部书页/文件 (薄荷绿) ===== -->
+    <!-- 左页 -->
+    <path
+        android:fillColor="#B5C9B7"
+        android:fillAlpha="0.3"
+        android:strokeColor="#B5C9B7"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M34,78 Q44,74 54,78 L54,96 Q44,94 34,96 Z"/>
+    <!-- 右页 -->
+    <path
+        android:fillColor="#B5C9B7"
+        android:fillAlpha="0.2"
+        android:strokeColor="#B5C9B7"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M54,78 Q64,74 74,78 L74,96 Q64,94 54,96 Z"/>
+    <!-- 书脊 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M54,78 L54,96"/>
+    <!-- 文字线条 -->
+    <path
+        android:strokeColor="#B5C9B7"
+        android:strokeAlpha="0.4"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M38,84 L50,83 M38,88 L50,87 M38,92 L46,91"/>
+    <path
+        android:strokeColor="#B5C9B7"
+        android:strokeAlpha="0.4"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M58,84 L70,83 M58,88 L70,87 M58,92 L66,91"/>
+
+    <!-- ===== 树干 (蜜桃粉) ===== -->
+    <!-- 主树干 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,78 C54,60 54,54 54,48 C53,44 50,40 49,36"/>
+    <!-- 树干渐变感填充 -->
+    <path
+        android:fillColor="#E8A0BF"
+        android:fillAlpha="0.2"
+        android:pathData="M54,78 C53,62 53,54 54,48 C55,54 55,62 54,78 Z"/>
+
+    <!-- 左侧大枝 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,56 C46,52 40,48 33,44"/>
+    <!-- 右侧大枝 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,54 C58,50 65,46 72,42"/>
+    <!-- 右上枝 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,50 C58,46 60,42 62,36"/>
+
+    <!-- 左侧细枝 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M40,48 C36,44 32,44 28,44"/>
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M46,52 C43,50 40,50 37,50"/>
+
+    <!-- 右侧细枝 -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M66,46 C70,42 73,42 76,44"/>
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M72,42 C74,40 76,38 78,36"/>
+
+    <!-- ===== 知识节点/花苞 (暖金黄 + 蜜桃粉) ===== -->
+
+    <!-- 节点 1: 左侧大枝顶端 -->
+    <path
+        android:fillColor="#F0C27A"
+        android:fillAlpha="0.9"
+        android:pathData="M33,44 m-6,0 a6,6 0,1 1,12 0 a6,6 0,1 1,-12 0"/>
+    <path
+        android:fillColor="#F0C27A"
+        android:fillAlpha="0.25"
+        android:pathData="M33,44 m-10,0 a10,10 0,1 1,20 0 a10,10 0,1 1,-20 0"/>
+
+    <!-- 节点 2: 右侧大枝顶端 -->
+    <path
+        android:fillColor="#F0C27A"
+        android:fillAlpha="0.85"
+        android:pathData="M72,42 m-5.5,0 a5.5,5.5 0,1 1,11 0 a5.5,5.5 0,1 1,-11 0"/>
+    <path
+        android:fillColor="#F0C27A"
+        android:fillAlpha="0.2"
+        android:pathData="M72,42 m-9,0 a9,9 0,1 1,18 0 a9,9 0,1 1,-18 0"/>
+
+    <!-- 节点 3: 右上枝顶端 (最高点) -->
+    <path
+        android:fillColor="#E8A0BF"
+        android:fillAlpha="0.9"
+        android:pathData="M62,36 m-7,0 a7,7 0,1 1,14 0 a7,7 0,1 1,-14 0"/>
+    <path
+        android:fillColor="#E8A0BF"
+        android:fillAlpha="0.2"
+        android:pathData="M62,36 m-11,0 a11,11 0,1 1,22 0 a11,11 0,1 1,-22 0"/>
+    <!-- 花苞芯 -->
+    <path
+        android:fillColor="#F0C27A"
+        android:fillAlpha="0.8"
+        android:pathData="M62,36 m-3,0 a3,3 0,1 1,6 0 a3,3 0,1 1,-6 0"/>
+
+    <!-- 节点 4: 左侧细枝 -->
+    <path
+        android:fillColor="#E8A0BF"
+        android:fillAlpha="0.8"
+        android:pathData="M28,44 m-4.5,0 a4.5,4.5 0,1 1,9 0 a4.5,4.5 0,1 1,-9 0"/>
+    <path
+        android:fillColor="#E8A0BF"
+        android:fillAlpha="0.2"
+        android:pathData="M28,44 m-7,0 a7,7 0,1 1,14 0 a7,7 0,1 1,-14 0"/>
+
+    <!-- 节点 5: 右侧细枝 -->
+    <path
+        android:fillColor="#E8A0BF"
+        android:fillAlpha="0.75"
+        android:pathData="M76,44 m-4.5,0 a4.5,4.5 0,1 1,9 0 a4.5,4.5 0,1 1,-9 0"/>
+
+    <!-- 节点 6: 左侧短枝 -->
+    <path
+        android:fillColor="#F0C27A"
+        android:fillAlpha="0.7"
+        android:pathData="M37,50 m-3.5,0 a3.5,3.5 0,1 1,7 0 a3.5,3.5 0,1 1,-7 0"/>
+
+    <!-- ===== 知识网络连接线 (微光) ===== -->
+    <path
+        android:strokeColor="#E8A0BF"
+        android:strokeAlpha="0.2"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:pathData="M33,44 L28,44 M62,36 L72,42 M62,36 L76,44 M33,44 L37,50 M72,42 L76,44"/>
 </vector>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.FileIntelligence" parent="android:Theme.Material.NoActionBar">
-        <item name="android:statusBarColor">#0F0F1A</item>
-        <item name="android:navigationBarColor">#0F0F1A</item>
-        <item name="android:windowBackground">#0F0F1A</item>
+    <style name="Theme.CrossK" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#1A1417</item>
+        <item name="android:navigationBarColor">#1A1417</item>
+        <item name="android:windowBackground">#1A1417</item>
     </style>
 </resources>
