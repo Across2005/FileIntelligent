@@ -97,7 +97,7 @@ fun TimeTravelSlider(
                             color = BrandPrimary,
                         )
                         Text(
-                            text = "${((currentWeek + 1).toFloat() / totalWeeks * 100).toInt()}%",
+                            text = "${timeTravelPercentage(currentWeek, totalWeeks)}%",
                             style = MaterialTheme.typography.labelSmall,
                             color = onSurfaceVariant.copy(alpha = 0.5f),
                         )
@@ -105,18 +105,27 @@ fun TimeTravelSlider(
 
                     Spacer(Modifier.height(4.dp))
 
-                    // Custom slider
-                    Slider(
-                        value = currentWeek.toFloat(),
-                        onValueChange = { onWeekChange(it.toInt().coerceIn(0, totalWeeks - 1)) },
-                        valueRange = 0f..(totalWeeks - 1).coerceAtLeast(1).toFloat(),
-                        steps = totalWeeks - 2,
-                        colors = SliderDefaults.colors(
-                            thumbColor = BrandPrimary,
-                            activeTrackColor = BrandPrimary,
-                            inactiveTrackColor = BrandPrimary.copy(alpha = 0.15f),
-                        ),
-                    )
+                    if (totalWeeks < 2) {
+                        // B-TTS-3: no data → don't render the slider (it would crash or degenerate)
+                        Text(
+                            text = "尚无时间线数据",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = onSurfaceVariant.copy(alpha = 0.4f),
+                        )
+                    } else {
+                        // Custom slider
+                        Slider(
+                            value = currentWeek.toFloat(),
+                            onValueChange = { onWeekChange(it.toInt().coerceIn(0, totalWeeks - 1)) },
+                            valueRange = 0f..(totalWeeks - 1).toFloat(),
+                            steps = timeTravelSteps(totalWeeks),
+                            colors = SliderDefaults.colors(
+                                thumbColor = BrandPrimary,
+                                activeTrackColor = BrandPrimary,
+                                inactiveTrackColor = BrandPrimary.copy(alpha = 0.15f),
+                            ),
+                        )
+                    }
 
                     // Timeline markers
                     Row(
@@ -133,3 +142,18 @@ fun TimeTravelSlider(
         }
     }
 }
+
+/**
+ * Compute the Slider's `steps` parameter safely.
+ * Compose's `Slider` throws IllegalArgumentException for `steps < 0`.
+ * `steps = totalWeeks - 2` is the gap count between endpoints; coerce to >= 0.
+ */
+internal fun timeTravelSteps(totalWeeks: Int): Int = (totalWeeks - 2).coerceAtLeast(0)
+
+/**
+ * Compute the percent-of-timeline display safely.
+ * Avoids divide-by-zero when `totalWeeks == 0` (fresh install, no data).
+ */
+internal fun timeTravelPercentage(currentWeek: Int, totalWeeks: Int): Int =
+    if (totalWeeks <= 0) 0
+    else ((currentWeek + 1).toFloat() / totalWeeks * 100).toInt()
