@@ -11,3 +11,12 @@ local.properties
 /app/build
 
 .worktrees/
+
+# Build / toolchain artifacts
+*.log
+.gradle-cache/
+.sdk-cache/
+
+# Local-only developer files
+.commit-msg.txt
+.superpowers/
