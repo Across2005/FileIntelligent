@@ -104,16 +104,6 @@ class AnalysisEngine {
         "不", "没", "未", "无", "非", "别", "莫", "勿", "没有", "不是",
     )
 
-    // ── 动词关联模式（用于关系分类） ──
-    private val relationPatterns = listOf(
-        Regex("(.+)(?:导致|引起|造成|带来|产生)(.+)") to RelationType.DERIVES_FROM,
-        Regex("(.+)(?:基于|根据|依据|来源)(.+)") to RelationType.DERIVES_FROM,
-        Regex("(.+)(?:包含|包括|涵盖)(.+)") to RelationType.BELONGS_TO,
-        Regex("(.+)(?:属于|归入|分类)(.+)") to RelationType.BELONGS_TO,
-        Regex("(.+)(?:不同|相反|对比|区别)(.+)") to RelationType.CONTRASTS_WITH,
-        Regex("(.+)(?:类似|相似|如同|好比)(.+)") to RelationType.SIMILAR_TO,
-        Regex("(.+)(?:引用|参考|借鉴)(.+)") to RelationType.REFERENCES,
-    )
 
     // ════════════════════════════════════════════
     //  PUBLIC API
@@ -230,10 +220,7 @@ class AnalysisEngine {
                 for (j in i + 1 until present.size) {
                     val a = present[i]
                     val b = present[j]
-                    val patternMatch = relationPatterns.firstNotNullOfOrNull { (rx, ty) ->
-                        val m = rx.find(sentence)
-                        if (m != null && (a in m.groupValues[0] || b in m.groupValues[0])) ty else null
-                    } ?: RelationType.CO_OCCURS
+                    val patternMatch = classifyRelationByPattern(sentence, a, b)
                     val srcId = entityByName[a]?.id ?: continue
                     val dstId = entityByName[b]?.id ?: continue
                     addEdge(srcId, dstId, 1.0f, patternMatch)
@@ -288,6 +275,58 @@ class AnalysisEngine {
      * 句子级共现关系抽取 — 供 GraphReconstructor 调用。
      * 只在同一个句子内的实体之间建立关系，避免 O(n²) 文件级噪声。
      */
+    /**
+     * Classify the relation type between two entities based on verb-pattern
+     * match in the given sentence. Uses regex capture groups (not the full match)
+     * to confirm that entity A and B occupy the documented grammatical roles
+     * (subject/predicate/object) in the pattern. Falls back to CO_OCCURS.
+     *
+     * IM-1 fix: previous logic checked `a in m.groupValues[0]` against the FULL
+     * match, which made a single "导致" anywhere in a sentence turn every entity
+     * pair in that sentence into a DERIVES_FROM edge.
+     */
+    internal fun classifyRelationByPattern(
+        sentence: String,
+        entityA: String,
+        entityB: String,
+    ): RelationType = classifyRelationByPatternStatic(sentence, entityA, entityB)
+
+    companion object {
+        // ── 动词关联模式（用于关系分类） ──
+        private val relationPatterns = listOf(
+            Regex("(.+)(?:导致|引起|造成|带来|产生)(.+)") to RelationType.DERIVES_FROM,
+            Regex("(.+)(?:基于|根据|依据|来源)(.+)") to RelationType.DERIVES_FROM,
+            Regex("(.+)(?:包含|包括|涵盖)(.+)") to RelationType.BELONGS_TO,
+            Regex("(.+)(?:属于|归入|分类)(.+)") to RelationType.BELONGS_TO,
+            Regex("(.+)(?:不同|相反|对比|区别)(.+)") to RelationType.CONTRASTS_WITH,
+            Regex("(.+)(?:类似|相似|如同|好比)(.+)") to RelationType.SIMILAR_TO,
+            Regex("(.+)(?:引用|参考|借鉴)(.+)") to RelationType.REFERENCES,
+        )
+
+        /**
+         * IM-1 fix exposed as a static helper for unit testing. The instance
+         * method classifyRelationByPattern delegates here. Uses regex capture
+         * groups (not the full match) to confirm that entity A and B occupy
+         * the documented grammatical roles in the pattern.
+         */
+        @JvmStatic
+        internal fun classifyRelationByPatternStatic(
+            sentence: String,
+            entityA: String,
+            entityB: String,
+        ): RelationType {
+            for ((rx, type) in relationPatterns) {
+                val m = rx.find(sentence) ?: continue
+                val g1 = m.groupValues.getOrNull(1) ?: continue
+                val g2 = m.groupValues.getOrNull(2) ?: continue
+                val matchAB = entityA in g1 && entityB in g2
+                val matchBA = entityB in g1 && entityA in g2
+                if (matchAB || matchBA) return type
+            }
+            return RelationType.CO_OCCURS
+        }
+    }
+
     fun extractRelations(sentences: List<String>, entities: Set<String>): List<Triple<String, String, Float>> {
         val relations = mutableListOf<Triple<String, String, Float>>()
 
