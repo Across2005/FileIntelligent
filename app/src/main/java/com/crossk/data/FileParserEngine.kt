@@ -4,7 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.BufferedReader
+import java.io.InputStream
 import java.io.InputStreamReader
+import java.nio.charset.Charset
 
 /**
  * Unified file parser engine — handles txt, md, pdf, docx via Android APIs.
@@ -41,9 +43,10 @@ class FileParserEngine(private val context: Context) {
 
             val extension = fileName.substringAfterLast('.', "")
 
-            // 2. Read text content
+            // 2. Read text content with encoding detection
+            // CR-3 (P0-3): detect BOM, fall back UTF-8 → GB18030 for legacy Chinese files
             val text = contentResolver.openInputStream(uri)?.use { inputStream ->
-                BufferedReader(InputStreamReader(inputStream, "UTF-8")).readText()
+                decodeWithEncodingDetection(inputStream)
             } ?: ""
 
             ParseResult(
@@ -86,6 +89,43 @@ class FileParserEngine(private val context: Context) {
             bytes < 1024 -> "${bytes}B"
             bytes < 1024 * 1024 -> "${bytes / 1024}KB"
             else -> "${bytes / (1024 * 1024)}MB"
+        }
+    }
+}
+
+/**
+ * CR-3 (P0-3) encoding detection.
+ *
+ * Strategy:
+ * 1. BOM-detect: UTF-8 (EF BB BF), UTF-16 LE (FF FE), UTF-16 BE (FE FF)
+ * 2. Else: try UTF-8; if it produces replacement chars (\uFFFD) on
+ *    non-ASCII content, fall back to GB18030 (superset of GBK, common
+ *    for legacy Chinese Windows text files).
+ */
+internal fun decodeWithEncodingDetection(input: InputStream): String {
+    val raw = input.readBytes()
+    return when {
+        // UTF-8 BOM
+        raw.size >= 3 && raw[0] == 0xEF.toByte() && raw[1] == 0xBB.toByte() && raw[2] == 0xBF.toByte() ->
+            String(raw, 3, raw.size - 3, Charsets.UTF_8)
+        // UTF-16 LE BOM
+        raw.size >= 2 && raw[0] == 0xFF.toByte() && raw[1] == 0xFE.toByte() ->
+            String(raw, 2, raw.size - 2, Charset.forName("UTF-16LE"))
+        // UTF-16 BE BOM
+        raw.size >= 2 && raw[0] == 0xFE.toByte() && raw[1] == 0xFF.toByte() ->
+            String(raw, 2, raw.size - 2, Charset.forName("UTF-16BE"))
+        // Try UTF-8; if it produces replacement chars on non-ASCII content, retry GB18030
+        else -> {
+            val utf8 = String(raw, Charsets.UTF_8)
+            if (utf8.contains('\uFFFD') && raw.any { it.toInt() and 0x80 != 0 }) {
+                try {
+                    String(raw, Charset.forName("GB18030"))
+                } catch (e: Exception) {
+                    utf8
+                }
+            } else {
+                utf8
+            }
         }
     }
 }
