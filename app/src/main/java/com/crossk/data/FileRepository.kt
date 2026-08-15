@@ -100,6 +100,7 @@ class FileRepository {
      * 一次性加载全部文件 + 边表数据（应用启动时调用）。
      */
     suspend fun loadAllFromRoom(): RepoResult<List<FileItem>> = withContext(Dispatchers.IO) {
+    try {
         RepoResult.runCatchingResult {
             val db = database ?: return@runCatchingResult emptyList()
             val fileEntities = db.fileDao().getAllFilesSync()
@@ -213,9 +214,11 @@ class FileRepository {
             addXpForEntities(result.entities.size)
             rebuildGlobalGraph()
             soundManager?.playParseComplete()
-            analysisStage = AnalysisStage.IDLE
             file
         }
+    } finally {
+        analysisStage = AnalysisStage.IDLE
+    }
     }
 
     /**
